@@ -192,6 +192,11 @@
       border-top: none !important;
       padding: 0 2.5rem 2rem;
     }
+
+    /* capstone: first two cols side by side, third spans full width beneath */
+    .capstone-grid { grid-template-columns: 1fr 1fr !important; }
+    .capstone-grid > div { border-bottom: 1px solid var(--blue); }
+    .capstone-grid > div:last-child { grid-column: 1 / -1; border-right: none; border-bottom: none; }
   }
 
   /* ── MASTHEAD ── */
@@ -898,6 +903,8 @@
     .proj-aside { border-top: none; padding: 0 2.5rem 2rem; }
     .project-item { border-bottom: 1px solid var(--rule); }
     .project-item:last-child { border-bottom: none; }
+    .capstone-grid { grid-template-columns: 1fr 1fr !important; grid-template-rows: auto auto; }
+    .capstone-grid > div:last-child { grid-column: 1 / -1; border-top: 1px solid var(--blue); border-right: none; }
   }
 </style>
 </head>
@@ -1193,7 +1200,7 @@
 
 <!-- ABOUT THE CAPSTONE -->
 <section id="capstone">
-  <div style="display:grid; grid-template-columns:260px 1fr 1fr; border-bottom:1px solid var(--blue);">
+  <div class="capstone-grid" style="display:grid; grid-template-columns:260px 1fr 1fr; border-bottom:1px solid var(--blue);">
 
     <div style="padding:2rem 1.5rem; border-right:1px solid var(--blue); display:flex; flex-direction:column; justify-content:space-between; gap:1.5rem;">
       <div>
