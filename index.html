@@ -186,6 +186,12 @@
       color: rgba(255,255,255,0.7);
     }
     nav ul li a:hover { background: #2233aa; color: var(--white); }
+
+    /* proj-aside: no border on mobile, padding matches proj-main */
+    .proj-aside {
+      border-top: none !important;
+      padding: 0 2.5rem 2rem;
+    }
   }
 
   /* ── MASTHEAD ── */
@@ -888,7 +894,10 @@
     .masthead-left, .context-main, .projects-mastbar-left,
     .watershed-label-col, .watershed-text-col,
     .map-col { border-right: none; border-bottom: 1px solid var(--blue); }
-    .proj-main { border-right: none; border-bottom: 1px solid var(--rule); }
+    .proj-main { border-right: none; border-bottom: none; }
+    .proj-aside { border-top: none; padding: 0 2.5rem 2rem; }
+    .project-item { border-bottom: 1px solid var(--rule); }
+    .project-item:last-child { border-bottom: none; }
   }
 </style>
 </head>
@@ -1012,7 +1021,7 @@
         <span class="w2">Research</span>
       </h2>
     </div>
-    <div class="projects-mastbar-right">Student Projects</div>
+    <div class="projects-mastbar-right">Five projects · Thesis PDFs &amp; video forthcoming</div>
   </div>
 
   <!-- 01 -->
