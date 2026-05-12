@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Learning to Live with Water — ENVS 397</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,300;0,400;0,700;0,900;1,300;1,700;1,900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,300;1,400;1,600&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #080808;
+    --white: #f4f2ed;
+    --mid: #888;
+    --rule: #d0cdc8;
+    --blue: #1a3ab8;
+    --blue-mid: #5566cc;
+    --blue-light: #8899dd;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  /* force all Cormorant italic to render from the loaded font, not synthesized */
+  @font-face {
+    font-family: 'Cormorant Garamond';
+    font-style: italic;
+    font-synthesis: none;
+  }
+
+  body {
+    background: var(--white);
+    color: var(--blue);
+    font-family: 'Courier Prime', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    overflow-x: hidden;
+    font-synthesis: none;
+  }
+
+  /* ── WATER RIPPLE FILTER ── */
+  /* SVG filter defined inline, applied via CSS */
+  .ripple-filter {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+  }
+
+  @keyframes ripple-turbulence {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* Applied to the serif spans that mix with condensed */
+  .serif-ripple {
+    display: inline-block;
+    animation: ripple-shift 6s ease-in-out infinite alternate;
+    will-change: filter;
+    filter: url(#water-ripple);
+  }
+
+  @keyframes ripple-shift {
+    0%   { filter: url(#water-ripple-a); }
+    50%  { filter: url(#water-ripple-b); }
+    100% { filter: url(#water-ripple-a); }
+  }
+
+  /* Slower, heavier ripple for the bold condensed title */
+  .bold-ripple {
+    display: inline-block;
+    animation: bold-ripple-shift 9s ease-in-out infinite alternate;
+    will-change: filter;
+  }
+
+  @keyframes bold-ripple-shift {
+    0%   { filter: url(#water-bold-a); }
+    50%  { filter: url(#water-bold-b); }
+    100% { filter: url(#water-bold-a); }
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    height: 40px;
+    background: var(--blue);
+    display: flex;
+    align-items: stretch;
+  }
+
+  .nav-brand {
+    display: flex;
+    align-items: center;
+    padding: 0 1.25rem;
+    font-family: 'Courier Prime', monospace;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    text-decoration: none;
+    border-right: 1px solid #2233aa;
+    white-space: nowrap;
+  }
+
+  nav ul {
+    display: flex;
+    list-style: none;
+    height: 100%;
+    margin-left: auto;
+  }
+  nav ul li { border-left: 1px solid #1a2e9a; }
+  nav ul li a {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding: 0 1rem;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 400;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    text-decoration: none;
+    transition: color 0.12s, background 0.12s;
+  }
+  nav ul li a:hover { color: var(--white); }
+
+  /* ── MASTHEAD ── */
+  .masthead {
+    padding-top: 40px;
+    border-bottom: 2px solid var(--blue);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .masthead-map {
+    position: absolute;
+    inset: 0;
+    background-image: url('germantownmap.jpg');
+    background-size: cover;
+    background-position: center 30%;
+    opacity: 0.09;
+    filter: grayscale(1) contrast(1.5);
+    pointer-events: none;
+  }
+
+  .masthead-grid {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 1fr 260px;
+    border-bottom: 1px solid var(--blue);
+  }
+
+  .masthead-left {
+    padding: 2.5rem 2.5rem 2rem;
+    border-right: 1px solid var(--blue);
+  }
+
+  .masthead-eyebrow {
+    font-family: 'Courier Prime', monospace;
+    font-size: 10px;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--blue-light);
+    margin-bottom: 1.75rem;
+    display: flex;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+  }
+
+  /* MAIN TITLE — condensed + playfair mix */
+  .masthead-title {
+    line-height: 0.9;
+    margin-bottom: 1.75rem;
+  }
+
+  .masthead-title .row1 {
+    display: block;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: clamp(3.8rem, 8vw, 7.5rem);
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+  }
+
+  .masthead-title .row2 {
+    display: block;
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--blue);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(3rem, 6vw, 5.6rem);
+    letter-spacing: -0.01em;
+    line-height: 1.05;
+  }
+
+  .masthead-title .row3 {
+    display: block;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: clamp(3.8rem, 8vw, 7.5rem);
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+  }
+
+  .masthead-title .row3 em {
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--blue);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 0.52em;
+    letter-spacing: 0.01em;
+  }
+
+  .masthead-sub-text {
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--blue);
+    font-style: italic;
+    font-size: 1rem;
+    max-width: 52ch;
+    line-height: 1.55;
+  }
+
+  .masthead-right {
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1.5rem;
+  }
+
+  .aside-label {
+    font-family: 'Courier Prime', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--blue-light);
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 0.4rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .masthead-right p {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    line-height: 1.55;
+  }
+
+  .masthead-right .note {
+    font-family: 'Courier Prime', monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.04em;
+    text-transform: none;
+    color: var(--blue-light);
+    font-weight: 400;
+    line-height: 1.65;
+    margin-top: 0.3rem;
+  }
+
+  .masthead-strip {
+    position: relative;
+    z-index: 2;
+    padding: 0.6rem 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .masthead-strip p {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 400;
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--blue-light);
+  }
+
+  .pill {
+    font-family: 'Courier Prime', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border: 1px solid var(--rule);
+    padding: 0.25rem 0.7rem;
+    color: var(--blue-light);
+    white-space: nowrap;
+  }
+
+  /* ── CONTEXT ── */
+  #context {
+    display: grid;
+    grid-template-columns: 1fr 260px;
+    border-bottom: 1px solid var(--blue);
+  }
+
+  .context-main {
+    padding: 2.5rem 2.5rem;
+    border-right: 1px solid var(--blue);
+  }
+
+  /* mixed question heading */
+  .context-question {
+    margin-bottom: 1.75rem;
+    line-height: 0.95;
+  }
+
+  .context-question .q1 {
+    display: block;
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--blue);
+    font-style: italic;
+    font-size: clamp(1.4rem, 2.8vw, 2.1rem);
+  }
+
+  .context-question .q2 {
+    display: block;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    line-height: 0.95;
+  }
+
+  /* image placeholder beneath heading */
+  .context-img-placeholder {
+    width: 100%;
+    aspect-ratio: 16/7;
+    background: #e4e2dd;
+    border: 1px dashed #bbb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.75rem;
+    margin-top: 0.25rem;
+  }
+
+  .context-img-placeholder span {
+    font-family: 'Courier Prime', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #bbb;
+  }
+
+  .context-main p {
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--blue);
+    margin-bottom: 1rem;
+    max-width: 60ch;
+  }
+
+  .context-main p.lede {
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--blue);
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--blue);
+  }
+
+  .context-sidebar {
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+  }
+
+  .sidebar-block p {
+    font-size: 11.5px;
+    line-height: 1.75;
+    color: var(--blue-light);
+  }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.85rem;
+    font-family: 'Courier Prime', monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 1px solid var(--blue);
+    color: var(--blue);
+    background: transparent;
+    transition: background 0.12s, color 0.12s;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .btn:hover { background: var(--blue); color: var(--white); }
+
+  .btn-ghost {
+    border-color: var(--rule);
+    color: #bbb;
+    cursor: not-allowed;
+  }
+  .btn-ghost:hover { background: transparent; color: #bbb; }
+
+  /* ── PROJECTS ── */
+  #projects { border-bottom: 2px solid var(--blue); }
+
+  .projects-mastbar {
+    display: grid;
+    grid-template-columns: 1fr 260px;
+    border-bottom: 1px solid var(--blue);
+    background: var(--blue);
+    color: var(--white);
+  }
+
+  .projects-mastbar-left {
+    padding: 1rem 2.5rem;
+    border-right: 1px solid #2233aa;
+  }
+
+  .projects-mastbar-left h2 {
+    line-height: 1;
+  }
+
+  .projects-mastbar-left h2 .w1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 1.35rem;
+    color: rgba(255,255,255,0.5);
+  }
+
+  .projects-mastbar-left h2 .w2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 1.35rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--white);
+    margin-left: 0.4rem;
+  }
+
+  .projects-mastbar-right {
+    padding: 1rem 1.5rem;
+    font-family: 'Courier Prime', monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--blue-mid);
+    display: flex;
+    align-items: center;
+  }
+
+  .project-item {
+    display: grid;
+    grid-template-columns: 1fr 260px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .project-item:last-child { border-bottom: none; }
+
+  .proj-main {
+    padding: 2.25rem 2.5rem;
+    border-right: 1px solid var(--blue);
+  }
+
+  .proj-tag {
+    font-family: 'Courier Prime', monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--blue-light);
+    margin-bottom: 0.6rem;
+  }
+
+  /* PROJECT TITLES — condensed + playfair mix, with ripple on serif */
+  .proj-title {
+    margin-bottom: 1.25rem;
+    line-height: 0.93;
+  }
+
+  .proj-title .t-cond {
+    display: block;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: clamp(2rem, 4vw, 3.4rem);
+    text-transform: uppercase;
+    letter-spacing: -0.015em;
+  }
+
+  .proj-title .t-serif {
+    display: block;
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--blue);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(1.6rem, 3.2vw, 2.7rem);
+    letter-spacing: 0;
+    line-height: 1.25;
+  }
+
+  .proj-title .t-inline {
+    display: block;
+    line-height: 0.95;
+  }
+
+  .proj-title .t-inline .tc {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: clamp(2rem, 4vw, 3.4rem);
+    text-transform: uppercase;
+    letter-spacing: -0.015em;
+  }
+
+  .proj-title .t-inline .ts {
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--blue);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(1.75rem, 3.4vw, 2.85rem);
+    letter-spacing: 0;
+    margin-left: 0.15em;
+  }
+
+  .proj-desc {
+    font-size: 12.5px;
+    line-height: 1.8;
+    color: var(--blue-mid);
+    max-width: 56ch;
+    margin-bottom: 1.5rem;
+  }
+
+  .proj-links {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .proj-aside {
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1.5rem;
+  }
+
+  .proj-members-label {
+    font-family: 'Courier Prime', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--blue-light);
+    margin-bottom: 0.5rem;
+  }
+
+  /* student names in Cormorant Garamond italic — 1930s editorial feel */
+  .proj-members-names {
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--blue);
+    font-style: italic;
+    font-size: 1.05rem;
+    color: var(--blue);
+    line-height: 1.55;
+  }
+
+  .video-placeholder {
+    width: 100%;
+    aspect-ratio: 16/9;
+    border: 1px dashed #ccc;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    color: #ccc;
+    font-family: 'Courier Prime', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* ── WATERSHED — own section ── */
+  #watershed {
+    border-bottom: 1px solid var(--blue);
+    display: grid;
+    grid-template-columns: 260px 1fr 1fr;
+  }
+
+  .watershed-label-col {
+    padding: 2rem 1.5rem;
+    border-right: 1px solid var(--blue);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .watershed-label-col .ws-heading {
+    line-height: 0.95;
+  }
+
+  .watershed-label-col .ws-heading .wh1 {
+    display: block;
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--blue);
+    font-style: italic;
+    font-size: 1rem;
+    color: var(--blue-light);
+  }
+
+  .watershed-label-col .ws-heading .wh2 {
+    display: block;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 1.7rem;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+  }
+
+  .watershed-text-col {
+    padding: 2rem 2rem;
+    border-right: 1px solid var(--blue);
+  }
+
+  .watershed-text-col p {
+    font-size: 12.5px;
+    line-height: 1.8;
+    color: var(--blue-mid);
+    margin-bottom: 1rem;
+    max-width: 44ch;
+  }
+
+  .watershed-img-col {
+    overflow: hidden;
+  }
+
+  .watershed-img-col img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: grayscale(1) contrast(1.05);
+  }
+
+ .body img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: grayscale(1) contrast(1.05);
+  }
+  
+  /* ── MAPS — full width, 3 columns ── */
+  #maps {
+    border-bottom: 1px solid var(--blue);
+  }
+
+  .maps-header {
+    padding: 0.8rem 2.5rem;
+    border-bottom: 1px solid var(--blue);
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+  }
+
+  .maps-header h2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 1rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .maps-header span {
+    font-family: 'Courier Prime', monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--blue-light);
+  }
+
+  .maps-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .map-col {
+    padding: 2rem;
+    border-right: 1px solid var(--blue);
+  }
+  .map-col:last-child { border-right: none; }
+
+  .map-year-label {
+    margin-bottom: 1rem;
+    line-height: 0.9;
+  }
+
+  .map-year-label .yr-num {
+    display: block;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 2.8rem;
+    letter-spacing: -0.03em;
+  }
+
+  .map-year-label .yr-desc {
+    display: block;
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--blue);
+    font-style: italic;
+    font-size: 0.8rem;
+    color: var(--blue-light);
+    margin-top: 0.1rem;
+  }
+
+  .map-col img {
+    width: 100%;
+    display: block;
+    filter: grayscale(1) contrast(1.05);
+    border: 1px solid #ccc;
+    margin-bottom: 0.75rem;
+  }
+
+  /* placeholder for 2026 map */
+  .map-img-placeholder {
+    width: 100%;
+    aspect-ratio: 3/4;
+    background: #e8e6e0;
+    border: 1px dashed #bbb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.75rem;
+  }
+
+  .map-img-placeholder span {
+    font-family: 'Courier Prime', monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #bbb;
+    text-align: center;
+    padding: 1rem;
+  }
+
+  .map-caption {
+    font-size: 10px;
+    color: var(--blue-light);
+    line-height: 1.6;
+    font-style: italic;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--blue);
+    color: var(--white);
+    display: grid;
+    grid-template-columns: 1fr 1fr 260px;
+  }
+
+  .foot-col {
+    padding: 2.5rem 2rem;
+    border-right: 1px solid #1a2e9a;
+  }
+  .foot-col:last-child { border-right: none; }
+
+  .foot-brand {
+    margin-bottom: 1.25rem;
+    line-height: 0.9;
+  }
+
+  .foot-brand .fb1 {
+    display: block;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    color: var(--white);
+  }
+
+  .foot-brand .fb2 {
+    display: block;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 1.25rem;
+    color: rgba(255,255,255,0.5);
+  }
+
+  .foot-brand .fb3 {
+    display: block;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    color: var(--white);
+  }
+
+  .foot-label {
+    font-family: 'Courier Prime', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+    border-bottom: 1px solid #1a2e9a;
+    padding-bottom: 0.4rem;
+    margin-bottom: 0.9rem;
+  }
+
+  footer p {
+    font-size: 11px;
+    line-height: 1.85;
+    color: var(--blue-light);
+  }
+
+  footer a { color: var(--blue-light); text-decoration: underline; text-underline-offset: 3px; }
+  footer a:hover { color: var(--white); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 960px) {
+    .masthead-grid, #context, .projects-mastbar,
+    #watershed, footer { grid-template-columns: 1fr; }
+    .project-item { grid-template-columns: 1fr; }
+    .maps-grid { grid-template-columns: 1fr; }
+    .masthead-left, .context-main, .projects-mastbar-left,
+    .watershed-label-col, .watershed-text-col,
+    .map-col { border-right: none; border-bottom: 1px solid var(--blue); }
+    .proj-main { border-right: none; border-bottom: 1px solid var(--rule); }
+    nav ul li a { padding: 0 0.6rem; font-size: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SVG water ripple filter — two states for smooth animation -->
+<svg class="ripple-filter" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Subtle ripple for Cormorant italic -->
+    <filter id="water-ripple-a" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.015 0.04" numOctaves="3" seed="1" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="3.5" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="water-ripple-b" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.018 0.035" numOctaves="3" seed="8" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="4.5" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <!-- Bolder, slower ripple for the heavy condensed title -->
+    <filter id="water-bold-a" x="-10%" y="-30%" width="120%" height="160%">
+      <feTurbulence type="turbulence" baseFrequency="0.008 0.025" numOctaves="4" seed="3" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="6" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="water-bold-b" x="-10%" y="-30%" width="120%" height="160%">
+      <feTurbulence type="turbulence" baseFrequency="0.006 0.02" numOctaves="4" seed="12" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="8" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+</svg>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-brand">ENVS SENIOR CAPSTONE · SP 2026</a>
+  <ul>
+    <li><a href="#context">Context</a></li>
+    <li><a href="#projects">Research</a></li>
+    <li><a href="#capstone">Capstone</a></li>
+    <li><a href="#watershed">The Water Shed</a></li>
+    <li><a href="#maps">Maps</a></li>
+  </ul>
+</nav>
+
+<!-- MASTHEAD -->
+<header class="masthead">
+  <div class="masthead-map"></div>
+  <div class="masthead-grid">
+    <div class="masthead-left">
+      <div class="masthead-title">
+        <span class="row1 bold-ripple">Learning</span>
+        <span class="row2 serif-ripple">to live with</span>
+        <span class="row3 bold-ripple">Water</span>
+      </div>
+      <p class="masthead-sub-text">Five student research projects on pluvial flooding, environmental justice, and community resilience in Germantown, Philadelphia.</p>
+      <div class="masthead-eyebrow" style="margin-top:2rem; margin-bottom:0;">
+        <span>Bi-Co Department of Environmental Studies</span>
+        <span>· Haverford &amp; Bryn Mawr Colleges</span>
+      </div>
+    </div>
+    <div class="masthead-right">
+      <div>
+        <p class="aside-label">Public Presentation</p>
+        <p>Wednesday<br>April 29, 2026<br>1:30–3:55 pm</p>
+        <p class="note">Lutnick Library 200<br>Haverford College</p>
+      </div>
+    </div>
+  </div>
+  <div class="masthead-strip">
+    <p>Germantown in Context</p>
+
+  </div>
+</header>
+
+<!-- CONTEXT -->
+<section id="context">
+  <div class="context-main">
+    <div class="context-question">
+      <span class="q1 serif-ripple">What does it mean</span>
+      <span class="q2">to live with flooding?</span>
+    </div>
+
+    <!-- Germantown resident photo -->
+    <div style="margin-bottom:1.75rem;">
+      <img src="https://water.phila.gov/wp-content/uploads/static/e-haines-crittenden_2.jpg" alt="Germantown resident — photo courtesy Philadelphia Water Department" style="width:100%; display:block; border:1px solid var(--rule); filter:grayscale(1) contrast(1.05);">
+      <p style="font-family:'Courier Prime',monospace; font-size:9.5px; letter-spacing:0.06em; color:var(--blue-light); font-style:italic; margin-top:0.4rem;">Photo: Philadelphia Water Department</p>
+    </div>
+
+    <p class="lede">What does it mean to live with flooding? What if that flooding isn't the result of a one-time "natural disaster" but a chronic condition – the by-product of decades of disinvestment, structural racism, and inadequate prioritization. In that case, how might concerned community members intervene and take control of their neighborhood's future infrastructure?</p>
+    <p>Germantown has long been on the front lines of urban flooding, and of policies that distribute its effects unequally. This semester, Haverford ENVS 397 students worked alongside The Water Shed and Germantown residents to explore how pluvial flooding impacts the neighborhood and what community-rooted solutions might make a difference.</p>
+    <p>The five research projects below range from a neighborhood climate resilience plan and a degrowth strategy for unbuilding infrastructure, to curricula for local youth, and a food web map of the Bi-Co. Each offers a different entry point into what a more resilient Germantown could look like.</p>
+  </div>
+
+  <div class="context-sidebar">
+    <div class="sidebar-block">
+      <p class="aside-label">Supported by</p>
+      <p>TriCo Philly Engagement Fund<br>Haverford Distinguished Visitors Program<br>Bi-Co Dept. of Environmental Studies</p>
+    </div>
+    <div class="sidebar-block">
+      <p class="aside-label">Community Partner</p>
+      <p>The Water Shed<br>Germantown, Philadelphia</p>
+    </div>
+    <div class="sidebar-block">
+      <p class="aside-label">Facilitated by</p>
+      <p>Dylan Gauthier<br>Visiting Assistant Professor<br>of Environmental Studies</p>
+    </div>
+    <div class="sidebar-block">
+      <p class="aside-label">Thank You</p>
+      <p>Ryan Strand Greenberg<br>Kaitlin Kylie Pomerantz<br>Deneene Brockington<br>Reverend Chester Williams<br>Lindsay Stolkey<br>Li Sumpter<br>Celeste Preston<br>Kent Watson<br>Carol Hager<br>Sara Grossman<br>Don Barber<br>Joshua Moses<br>Adam Levine/Philly H20</p>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="projects-mastbar">
+    <div class="projects-mastbar-left">
+      <h2>
+        <span class="w1">Student</span>
+        <span class="w2">Research</span>
+      </h2>
+    </div>
+
+  </div>
+
+  <!-- 01 -->
+  <div class="project-item">
+    <div class="proj-main">
+      <p class="proj-tag">Climate Resilience · Planning · Policy</p>
+      <div class="proj-title">
+        <span class="t-cond">Neighborhood</span>
+        <span class="t-serif serif-ripple">Climate Resilience</span>
+        <span class="t-cond">Plan</span>
+      </div>
+      <p class="proj-desc">A community-rooted framework for building flood resilience across Germantown, integrating green infrastructure, policy recommendations, and resident-centered engagement strategies into a practical and actionable report.</p>
+     
+      <div class="proj-links">
+        <a href="pdfs/climate_resilience_thesis.pdf" class="btn" target="_blank">↓ Thesis (PDF)</a>
+        <a href="https://docs.google.com/presentation/d/1yEuiuQR4-nBPTi20Zm0L-qXxNR3YywdI5_gY-wBwDL4/" class="btn" target="_blank">↗ Slides (Link)</a>
+        <a href="https://hc.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=854f7404-0c3b-4e58-9617-b43b011f6d12&start=2201.328999" class="btn" target="_blank">▶ Video</a>
+      </div>
+      
+    </div>
+    <div class="proj-aside">
+      <div>
+        <p class="proj-members-label">Research by</p>
+        <p class="proj-members-names">Natalie Schliekelman<br>Makalyla Coleman<br>Sarah Boruchov<br>Noah Levin</p>
+      </div>
+      
+        <div class="video-placeholder">
+		<div style="position: relative; width: 100%; height: 0; padding-bottom: 56.25%">
+		<iframe src="https://hc.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=854f7404-0c3b-4e58-9617-b43b011f6d12&autoplay=false&offerviewer=true&showtitle=false&showbrand=false&captions=false&start=2201.328999&interactivity=none" style="border: 1px solid #464646; position: absolute; top: 0; left: 0; width: 100%; height: 100%; box-sizing: border-box;" allowfullscreen allow="autoplay" aria-label="Panopto Embedded Video Player" aria-description="Wednesday, April 29, 2026 at 1:25:45 PM"></iframe>
+		</div>  
+    	</div>
+   
+    </div>
+  </div>
+
+  <!-- 02 -->
+  <div class="project-item">
+    <div class="proj-main">
+      <p class="proj-tag">Infrastructure · Degrowth · Justice</p>
+      <div class="proj-title">
+        <span class="t-inline">
+          <span class="tc">Germantown</span>
+          <br/><span class="t-serif serif-ripple">Just Transition / Degrowth</span>
+        </span>
+        <span class="t-cond">PLAN</span>
+      </div>
+      <p class="proj-desc">Drawing on just transition and degrowth frameworks, this project proposes strategic alternatives to conventional flood management: depaving, soil restoration, and community-controlled approaches to building a more porous, water-ready Germantown.</p>
+      <div class="proj-links">
+        <a href="pdfs/degrowth_thesis.pdf" class="btn" target="_blank">↓ Thesis (PDF)</a>
+        <a href="https://docs.google.com/presentation/d/1zPwnHM-l8VuWkxIucCA1VjNxC6ufZViC0grVs4P3pfw/edit?usp=sharing" class="btn" target="_blank">↗ Slides (Link)</a>
+        <a href="https://open.substack.com/pub/ela82/p/what-does-it-mean-for-water-to-return" target="_blank" rel="noopener" class="btn" target="_blank">↗ Op-Ed Article (Substack)</a>
+        <a href="https://hc.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=854f7404-0c3b-4e58-9617-b43b011f6d12&start=4561.329" class="btn" target="_blank">▶ Video</a>
+      </div> 
+    </div>
+    <div class="proj-aside">
+      <div>
+        <p class="proj-members-label">Research by</p>
+        <p class="proj-members-names">Ela Kowardy<br>Skyler Kim-Schellinger<br>Marley Iralien</p>
+      </div>
+     <div class="video-placeholder">
+		<div style="position: relative; width: 100%; height: 0; padding-bottom: 56.25%">
+		<iframe src="https://hc.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=854f7404-0c3b-4e58-9617-b43b011f6d12&autoplay=false&offerviewer=true&showtitle=false&showbrand=false&captions=false&start=4561.329&interactivity=none" style="border: 1px solid #464646; position: absolute; top: 0; left: 0; width: 100%; height: 100%; box-sizing: border-box;" allowfullscreen allow="autoplay" aria-label="Panopto Embedded Video Player" aria-description="Wednesday, April 29, 2026 at 1:25:45 PM"></iframe>
+		</div> 
+	</div> 
+    </div>
+  </div>
+
+  <!-- 03 -->
+  <div class="project-item">
+    <div class="proj-main">
+      <p class="proj-tag">Education · Youth · Flooding</p>
+      <div class="proj-title">
+        <span class="t-serif serif-ripple">Germantown</span>
+        <span class="t-inline">
+          <span class="tc">Flooding</span>
+          <span class="ts serif-ripple">Curriculum</span>
+        </span>
+      </div>
+      <p class="proj-desc">A place-based environmental education curriculum teaching Germantown youth to understand, interpret, and respond to the pluvial flooding shaping their neighborhood, while connecting local water dynamics to broader histories of disinvestment and community resilience.</p>
+      <div class="proj-links">
+        <a href="#" class="btn" target="_blank">↓ Thesis (PDF)</a>
+        <a href="https://docs.google.com/presentation/d/1N4xEc2OCnOcSU54tyDIcZisHw3C1lpD4yIBoprCTJ_Y/edit?usp=sharing" target="_blank" class="btn">↗ Slides (Link)</a>
+		<a href="https://hc.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=854f7404-0c3b-4e58-9617-b43b011f6d12&start=6051.329" class="btn" target="_blank">▶ Video</a>
+      </div>
+    </div>
+    <div class="proj-aside">
+      <div>
+        <p class="proj-members-label">Research by</p>
+        <p class="proj-members-names">Natasha Ring<br>Jo Smith<br>Jasmin Dluzniewski</p>
+      </div>
+      <div class="video-placeholder">
+		<div style="position: relative; width: 100%; height: 0; padding-bottom: 56.25%">
+		<iframe src="https://hc.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=854f7404-0c3b-4e58-9617-b43b011f6d12&autoplay=false&offerviewer=true&showtitle=false&showbrand=false&captions=false&start=6051.329&interactivity=none" style="border: 1px solid #464646; position: absolute; top: 0; left: 0; width: 100%; height: 100%; box-sizing: border-box;" allowfullscreen allow="autoplay" aria-label="Panopto Embedded Video Player" aria-description="Wednesday, April 29, 2026 at 1:25:45 PM"></iframe>
+		</div> 
+		</div>  
+    </div>
+  </div>
+
+  <!-- 04 -->
+  <div class="project-item">
+    <div class="proj-main">
+      <p class="proj-tag">Education · Youth · Water Quality</p>
+      <div class="proj-title">
+        <span class="t-serif serif-ripple">Germantown</span>
+        <span class="t-inline">
+          <span class="tc">Water Quality</span>
+          <span class="ts serif-ripple">Curriculum</span>
+        </span>
+      </div>
+      <p class="proj-desc">An inquiry-based curriculum focused on water quality in Germantown that examines both what's in the water, and how residents can become informed participants in monitoring, advocacy, and the push for environmental justice in their watershed.</p>
+      <div class="proj-links">
+        <a href="pdfs/water_quality_thesis.pdf" class="btn" target="_blank">↓ Thesis (PDF)</a>
+        <a href="https://docs.google.com/presentation/d/1erwUskIGxtV-EJgYMEiBJLxG81F1FAJs-dllDgZNrng/edit?usp=sharing" class="btn" target="_blank">↗ Slides (Link)</a>
+        <a href="https://hc.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=854f7404-0c3b-4e58-9617-b43b011f6d12&start=6981.329" class="btn" target="_blank">▶ Video</a>
+      </div>
+    </div>
+    <div class="proj-aside">
+      <div>
+        <p class="proj-members-label">Research by</p>
+        <p class="proj-members-names">Kayla Bass<br>Priita Peterson</p>
+      </div>
+        <div class="video-placeholder">
+		<div style="position: relative; width: 100%; height: 0; padding-bottom: 56.25%">
+		<iframe src="https://hc.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=854f7404-0c3b-4e58-9617-b43b011f6d12&autoplay=false&offerviewer=true&showtitle=false&showbrand=false&captions=false&start=6981.329&interactivity=none" style="border: 1px solid #464646; position: absolute; top: 0; left: 0; width: 100%; height: 100%; box-sizing: border-box;" allowfullscreen allow="autoplay" aria-label="Panopto Embedded Video Player" aria-description="Wednesday, April 29, 2026 at 1:25:45 PM"></iframe>
+		</div>      
+	  	</div>
+    </div>
+  </div>
+
+  <!-- 05 — Food Web: extra Website button -->
+  <div class="project-item">
+    <div class="proj-main">
+      <p class="proj-tag">Ecology · Food Systems · Mapping</p>
+      <div class="proj-title">
+        <span class="t-inline">
+          <span class="tc">Toward a Better</span>
+          <span class="ts serif-ripple">Bi-Co</span>
+        </span>
+        <span class="t-cond">Food Web</span>
+      </div>
+      <p class="proj-desc">An ecological and socio-material mapping of how food flows through the Bryn Mawr–Haverford campus ecosystem — from sourcing and procurement to waste streams — leveraging visualizations of institutional food systems as a model for community-scale food system mapping</p>
+      <div class="proj-links">
+        <a href="pdfs/food_web_thesis.pdf" class="btn" target="_blank">↓ Thesis (PDF)</a>
+        <a href="https://docs.google.com/presentation/d/1xUDP6MtuSyGhiz0KOPg0btMYeEk_hytyZsqPveFvrKc/edit?usp=sharing" class="btn" target="_blank">↗ Slides (Link)</a>
+        <a href="https://sites.google.com/haverford.edu/envs-capstone-website?usp=sharing" target="_blank" rel="noopener" class="btn" target="_blank">↗ Website</a>
+        <a href="https://hc.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=854f7404-0c3b-4e58-9617-b43b011f6d12&start=668.270869" class="btn" target="_blank">▶ Video</a>
+      </div>
+    </div>
+    <div class="proj-aside">
+      <div>
+        <p class="proj-members-label">Research by</p>
+        <p class="proj-members-names">Lilly Lakritz<br>Alexa Fraiman<br>Darren Belanger<br>Rosa Garcia</p>
+      </div>
+      
+      <div class="video-placeholder">
+		<div style="position: relative; width: 100%; height: 0; padding-bottom: 56.25%">
+		<iframe src="https://hc.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=854f7404-0c3b-4e58-9617-b43b011f6d12&autoplay=false&offerviewer=true&showtitle=false&showbrand=false&captions=false&start=668.270869&interactivity=none" style="border: 1px solid #464646; position: absolute; top: 0; left: 0; width: 100%; height: 100%; box-sizing: border-box;" allowfullscreen allow="autoplay" aria-label="Panopto Embedded Video Player" aria-description="Wednesday, April 29, 2026 at 1:25:45 PM"></iframe>
+		</div>      
+	  </div>
+	  
+    </div>
+  </div>
+
+</section>
+
+<!-- ABOUT THE CAPSTONE -->
+<section id="capstone">
+  <div style="display:grid; grid-template-columns:260px 1fr 1fr; border-bottom:1px solid var(--blue);">
+
+    <div style="padding:2rem 1.5rem; border-right:1px solid var(--blue); display:flex; flex-direction:column; justify-content:space-between; gap:1.5rem;">
+      <div>
+        <p class="aside-label">About the Capstone</p>
+        <div style="font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:1.4rem; text-transform:uppercase; letter-spacing:-0.01em; line-height:1.05; color:var(--blue);">ENVS 397</div>
+        <div style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:0.95rem; color:var(--blue); margin-top:0.3rem; line-height:1.4;">Senior Capstone in Environmental Studies</div>
+        <blockquote style="margin-top:1.5rem; border-top:1px solid var(--rule); padding-top:1.25rem;">
+          <p style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:1rem; line-height:1.65; color:var(--blue);">"So the point of good organising design isn't to impose control. It's to restore agency — especially collective agency. That's what liberation looks like in practice: people discovering they can act together, and that action matters."</p>
+          <cite style="display:block; margin-top:0.75rem; font-family:'Courier Prime',monospace; font-style:normal; font-size:9.5px; letter-spacing:0.06em; color:var(--blue-light); line-height:1.5;">— Roger Hallam<br>co-founder, Extinction Rebellion and Just Stop Oil</cite>
+        </blockquote>
+              <div style="margin-top:1.5rem;">
+        <a href="https://docs.google.com/document/d/1f-nSHQWxQpbKFSAVIMlN7RjfVV2pRlIgofTABjOknsY/" target="_blank" rel="noopener" class="btn" target="_blank">↗ Syllabus (link)</a>
+      </div>
+      </div>
+    </div>
+
+    <div style="padding:2rem 2rem; border-right:1px solid var(--blue);">
+      <p style="font-size:13px; line-height:1.8; color:var(--blue-mid); margin-bottom:1rem;">ENVS 397 is the culminating capstone course for <a href="https://www.haverford.edu/environmental-studies" target="_blank">Bi-Co Environmental Studies</a> majors. The course is structured as a semester-long collaboration with a community partner, with which students develop meaningful, collaborative, place-based projects. In this case, we worked with The Water Shed, a Germantown-based environmental organization that operates a storefront community hub focused on flooding, environmental resilience, stormwater, and neighborhood-scale climate adaptation.</p>
+      <p style="font-size:13px; line-height:1.8; color:var(--blue-mid);">In a typical semester, students work in interdisciplinary teams to develop applied research projects that respond to the needs of our community partner(s). These may take a variety of approaches and methodologies, drawing on the students' individual and collective backgrounds, and could include resilience planning, economic assessments, curriculum development, oral histories, outreach strategies, or the creation of public-facing resources.</p>
+
+    </div>
+
+    <div style="padding:2rem 2rem;">
+      <ul style="list-style:none; display:flex; flex-direction:column; gap:0.75rem;">
+        <li style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:1rem; line-height:1.5; color:var(--blue);">"Small is good, small is all. <span style="font-family:'Courier Prime',monospace; font-style:normal; font-size:0.8em; color:var(--blue-light);">(The large is a reflection of the small.)</span></li>
+        <li style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:1rem; line-height:1.5; color:var(--blue);">Change is constant. <span style="font-family:'Courier Prime',monospace; font-style:normal; font-size:0.8em; color:var(--blue-light);">(Be like water).</span></li>
+        <li style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:1rem; line-height:1.5; color:var(--blue);">There is always enough time for the right work.</li>
+        <li style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:1rem; line-height:1.5; color:var(--blue);">There is a conversation in the room that only these people at this moment can have. Find it.</li>
+        <li style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:1rem; line-height:1.5; color:var(--blue);">Never a failure, always a lesson.</li>
+        <li style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:1rem; line-height:1.5; color:var(--blue);">Trust the People. <span style="font-family:'Courier Prime',monospace; font-style:normal; font-size:0.8em; color:var(--blue-light);">(If you trust the people, they become trustworthy).</span></li>
+        <li style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:1rem; line-height:1.5; color:var(--blue);">Move at the speed of trust.</li>
+        <li style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:1rem; line-height:1.5; color:var(--blue);">Focus on critical connections more than critical mass — build the resilience by building the relationships.</li>
+        <li style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:1rem; line-height:1.5; color:var(--blue);">Less prep, more presence.</li>
+        <li style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:1rem; line-height:1.5; color:var(--blue);">What you pay attention to grows."</li>
+      </ul>
+              <cite style="display:block; margin-top:0.75rem; font-family:'Courier Prime',monospace; font-style:normal; font-size:9.5px; letter-spacing:0.06em; color:var(--blue-light); line-height:1.5;">— adrienne maree brown, Emergent Strategy</cite>
+    </div>
+
+  </div>
+</section>
+
+<!-- PHOTO GALLERY -->
+<section id="gallery" style="border-bottom:1px solid var(--blue);">
+  <div style="padding:0.8rem 2.5rem; border-bottom:1px solid var(--blue); display:flex; align-items:baseline; gap:1rem;">
+    <h2 style="font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:1rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--blue);">From the Semester</h2>
+    <span style="font-family:'Courier Prime',monospace; font-size:9.5px; letter-spacing:0.1em; text-transform:uppercase; color:var(--blue-light);">Site visits to The Water Shed >> Presentations at Haverford College</span>
+  </div>
+  <div style="display:grid; grid-template-columns:2fr 3fr 3fr; grid-template-rows:auto auto; gap:0;">
+
+    <!-- large image spanning 2 rows on left -->
+    <div style="border-right:1px solid var(--blue); border-bottom:1px solid var(--blue);">
+      <img src="images/class-01.jpeg" alt="ENVS 397 class at The Water Shed" style="width:100%; height:100%; object-fit:cover; display:block; filter:grayscale(0.8) contrast(1.05);">
+    </div>
+
+    <!-- top right -->
+    <div style="border-right:1px solid var(--blue); border-bottom:1px solid var(--blue);">
+      <img src="images/class-02.jpeg" alt="Water Shed interior — artwork on windows" style="width:100%; height:100%; object-fit:cover; display:block; filter:grayscale(0.8) contrast(1.05);">
+    </div>
+
+    <!-- top far right -->
+    <div style="border-bottom:1px solid var(--blue);">
+      <img src="images/class-03.jpeg" alt="The Water Shed storefront, Germantown" style="width:100%; height:100%; object-fit:cover; display:block; filter:grayscale(0.8) contrast(1.05);">
+    </div>
+
+    <!-- bottom right pair -->
+    <div style="border-right:1px solid var(--blue);">
+      <img src="images/class-04.jpeg" alt="Presenter at The Water Shed" style="width:100%; height:100%; object-fit:cover; display:block; filter:grayscale(0.8) contrast(1.05);">
+    </div>
+
+    <div>
+      <img src="images/class-05.jpeg" alt="Class session at The Water Shed" style="width:100%; height:100%; object-fit:cover; display:block; filter:grayscale(0.8) contrast(1.05);">
+    </div>
+    
+    <div>
+      <img src="images/class-06.jpeg" alt="Presentations at Haverford" style="width:100%; height:100%; object-fit:cover; display:block; filter:grayscale(0.8) contrast(1.05);">
+    </div>
+    
+    <div>
+      <img src="images/class-07.jpeg" alt="Presentations at Haverford" style="width:100%; height:100%; object-fit:cover; display:block; filter:grayscale(0.8) contrast(1.05);">
+    </div>
+  
+    <div>
+      <img src="images/class-08.jpeg" alt="Presentations at Haverford" style="width:100%; height:100%; object-fit:cover; display:block; filter:grayscale(0.8) contrast(1.05);">
+    </div>
+    
+    <div>
+      <img src="images/class-09.jpeg" alt="Presentations at Haverford" style="width:100%; height:100%; object-fit:cover; display:block; filter:grayscale(0.8) contrast(1.05);">
+    </div>
+    
+    </div>
+
+</section>
+<section id="watershed">
+  <div class="watershed-label-col">
+    <div>
+      <p class="aside-label">Community Partner</p>
+      <div class="ws-heading">
+        <span class="wh1 serif-ripple">The</span>
+        <span class="wh2">WaterShed</span>
+      </div>
+    </div>
+    <a href="https://www.water-shed.org/" target="_blank" rel="noopener" class="btn" style="margin-top:1.5rem; align-self:flex-start;">Visit water-shed.org →</a>
+  </div>
+  <div class="watershed-text-col">
+    <p>The Water Shed opened in November 2024 in Germantown as a community hub for flood resilience bringing together art, flooding resources, education, and science.</p>
+    <p>The space operates in partnership with the Philadelphia Water Department, Mural Arts Philadelphia, and the Academy of Natural Sciences of Drexel University.</p>
+    <p style="font-size:10.5px; color:#aaa; font-style:italic; margin-top:0.5rem;">Image courtesy The Water Shed.</p>
+  </div>
+  <div class="watershed-img-col">
+    <img src="images/watershed.webp" alt="The WaterShed, Germantown">
+  </div>
+</section>
+
+<!-- MAPS — full width, 3 columns -->
+<section id="maps">
+  <div class="maps-header">
+    <h2>Germantown Maps</h2>
+    <span></span>
+  </div>
+  <div class="maps-grid">
+    <div class="map-col">
+      <div class="map-year-label">
+        <span class="yr-num">1683</span>
+        <span class="yr-desc serif-ripple">Germantown, founded</span>
+      </div>
+      <img src="images/germantown_map_1688.jpg" alt="Map of Germantown, 1688">
+      <p class="map-caption">Map of Germantown, 1688. From the original in the library of the Author. One of the earliest cartographic records of the settlement, showing lot boundaries and waterways.</p>
+    </div>
+
+    <div class="map-col">
+      <div class="map-year-label">
+        <span class="yr-num">1871</span>
+        <span class="yr-desc serif-ripple">22nd Ward, City of Philadelphia</span>
+      </div>
+      <img src="images/germantownmap.jpg" alt="Outline Plan of Germantown, 22nd Ward, 1871">
+      <p class="map-caption">G.M. Hopkins, C.E. Outline Plan of Germantown, 22nd Ward, 1871. <a href="https://libwww.freelibrary.org/digital/item/46249" target="_blank" rel="noopener" style="color:var(--mid);">Free Library of Philadelphia →</a></p>
+    </div>
+
+    <div class="map-col">
+      <div class="map-year-label">
+        <span class="yr-num">2026</span>
+        <span class="yr-desc serif-ripple">Germantown today</span>
+      </div>
+      <img src="images/germantown2025.png" alt="Germantown today — map courtesy Philadelphia OpenMaps (https://openmaps.phila.gov/)" style="width:100%; display:block; filter:grayscale(1) contrast(1.05); border:1px solid #ccc; margin-bottom:0.75rem;">
+      <p class="map-caption">Map courtesy Philadelphia OpenMaps.<a href="https://openmaps.phila.gov/" target="_blank" rel="noopener" style="color:var(--mid);">https://openmaps.phila.gov/) →</a></p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-col">
+    <div class="foot-brand">
+      <span class="fb1">Learning to</span>
+      <span class="fb2">live with</span>
+      <span class="fb3">Water</span>
+    </div>
+    <p>ENVS 397 Senior Capstone · Spring 2026<br>Bi-Co Dept. of Environmental Studies<br>Haverford &amp; Bryn Mawr Colleges</p>
+  </div>
+  <div class="foot-col">
+    <p class="foot-label">Acknowledgments</p>
+    <p>TriCo Philly Engagement Grant<br>Distinguished Visitors Program, Haverford<br>Bi-Co Dept. of Environmental Studies<br>The Water Shed, Germantown<br>Philadelphia Water Department<br>Mural Arts Philadelphia<br>Academy of Natural Sciences, Drexel University<br><br>Congratulations to all the graduating seniors.</p>
+  </div>
+  <div class="foot-col">
+    <p class="foot-label">Map Credits</p>
+    <p>G.M. Hopkins, C.E. <em>Atlas of Germantown, 22nd Ward, 1871, Map Index.</em> Map Collection, Free Library of Philadelphia.<br><br><a href="https://libwww.freelibrary.org/digital/item/46249" target="_blank" rel="noopener">View record at the Free Library of Philadelphia →</a></p>
+  </div>
+</footer>
+
+</body>
+</html>
