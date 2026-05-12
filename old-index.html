@@ -126,68 +126,6 @@
   }
   nav ul li a:hover { color: var(--white); }
 
-  /* hamburger button — hidden on desktop */
-  .nav-hamburger {
-    display: none;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 5px;
-    width: 40px;
-    height: 40px;
-    margin-left: auto;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 0 12px;
-    flex-shrink: 0;
-  }
-
-  .nav-hamburger span {
-    display: block;
-    width: 20px;
-    height: 1.5px;
-    background: rgba(255,255,255,0.6);
-    transition: transform 0.2s, opacity 0.2s;
-  }
-
-  /* open state */
-  nav.open .nav-hamburger span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
-  nav.open .nav-hamburger span:nth-child(2) { opacity: 0; }
-  nav.open .nav-hamburger span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
-
-  /* mobile dropdown */
-  @media (max-width: 760px) {
-    .nav-hamburger { display: flex; }
-
-    nav ul {
-      display: none;
-      position: absolute;
-      top: 40px;
-      left: 0; right: 0;
-      flex-direction: column;
-      height: auto;
-      background: var(--blue);
-      border-top: 1px solid #2233aa;
-      margin-left: 0;
-    }
-
-    nav.open ul { display: flex; }
-
-    nav ul li {
-      border-left: none;
-      border-bottom: 1px solid #1a2e9a;
-    }
-
-    nav ul li a {
-      height: 44px;
-      padding: 0 1.5rem;
-      font-size: 13px;
-      color: rgba(255,255,255,0.7);
-    }
-    nav ul li a:hover { background: #2233aa; color: var(--white); }
-  }
-
   /* ── MASTHEAD ── */
   .masthead {
     padding-top: 40px;
@@ -889,6 +827,7 @@
     .watershed-label-col, .watershed-text-col,
     .map-col { border-right: none; border-bottom: 1px solid var(--blue); }
     .proj-main { border-right: none; border-bottom: 1px solid var(--rule); }
+    nav ul li a { padding: 0 0.6rem; font-size: 10px; }
   }
 </style>
 </head>
@@ -919,18 +858,15 @@
 </svg>
 
 <!-- NAV -->
-<nav id="main-nav">
+<nav>
   <a href="#" class="nav-brand">ENVS SENIOR CAPSTONE · SP 2026</a>
-  <button class="nav-hamburger" aria-label="Toggle menu" onclick="document.getElementById('main-nav').classList.toggle('open')">
-    <span></span><span></span><span></span>
-  </button>
   <ul>
-    <li><a href="#context" onclick="document.getElementById('main-nav').classList.remove('open')">Context</a></li>
-    <li><a href="#projects" onclick="document.getElementById('main-nav').classList.remove('open')">Research</a></li>
-    <li><a href="#capstone" onclick="document.getElementById('main-nav').classList.remove('open')">Capstone</a></li>
-    <li><a href="#watershed" onclick="document.getElementById('main-nav').classList.remove('open')">The Water Shed</a></li>
-    <li><a href="#maps" onclick="document.getElementById('main-nav').classList.remove('open')">Maps</a></li>
-    <li><a href="#gallery" onclick="document.getElementById('main-nav').classList.remove('open')">Images</a></li>
+    <li><a href="#context">Context</a></li>
+    <li><a href="#projects">Research</a></li>
+    <li><a href="#capstone">Capstone</a></li>
+    <li><a href="#watershed">The Water Shed</a></li>
+    <li><a href="#maps">Maps</a></li>
+    <li><a href="#gallery">Images</a></li>
   </ul>
 </nav>
 
@@ -1012,7 +948,7 @@
         <span class="w2">Research</span>
       </h2>
     </div>
-    <div class="projects-mastbar-right">Student Projects</div>
+
   </div>
 
   <!-- 01 -->
@@ -1078,7 +1014,7 @@
 		</div> -->
 	</div> 
     </div>
-  </div>
+  
 
   <!-- 03 -->
   <div class="project-item">
@@ -1194,8 +1130,10 @@
        
               <div style="margin-top:1.5rem;">
         <a href="https://docs.google.com/document/d/1f-nSHQWxQpbKFSAVIMlN7RjfVV2pRlIgofTABjOknsY/" target="_blank" rel="noopener" class="btn" target="_blank">↗ Syllabus (link)</a>
+     
       </div>
       </div>
+      
     </div>
 
     <div style="padding:2rem 2rem; border-right:1px solid var(--blue);">
@@ -1207,11 +1145,10 @@
     </div>
 
     <div style="padding:2rem 2rem;">
-     <blockquote style="margin-top:0rem; border-top:0px solid var(--rule);">
+     	<blockquote style="margin-top:0rem; border-top:0px solid var(--rule);">
           <p style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:1rem; line-height:1.65; color:var(--blue);">"So the point of good organising design isn't to impose control. It's to restore agency — especially collective agency. That's what liberation looks like in practice: people discovering they can act together, and that action matters."</p>
           <cite style="display:block; margin-top:0.75rem; font-family:'Courier Prime',monospace; font-style:normal; font-size:9.5px; letter-spacing:0.06em; color:var(--blue-light); line-height:1.5;">— Roger Hallam, co-founder, Extinction Rebellion/Just Stop Oil</cite>
         </blockquote>
-        
         <blockquote style="margin-top:.5rem; border-top:0px solid var(--rule); padding-top:1.25rem;">
         <ul style="list-style:none; display:flex; flex-direction:column; gap:0.75rem;">
         <li style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:1rem; line-height:1.5; color:var(--blue);">"Small is good, small is all. <span style="font-family:'Courier Prime',monospace; font-style:normal; font-size:0.8em; color:var(--blue-light);">(The large is a reflection of the small.)</span></li>
@@ -1224,7 +1161,7 @@
         <li style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:1rem; line-height:1.5; color:var(--blue);">Focus on critical connections more than critical mass — build the resilience by building the relationships.</li>
         <li style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:1rem; line-height:1.5; color:var(--blue);">Less prep, more presence.</li>
         <li style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:1rem; line-height:1.5; color:var(--blue);">What you pay attention to grows."</li>
-      </ul>
+     	 </ul>
               <cite style="display:block; margin-top:0.75rem; font-family:'Courier Prime',monospace; font-style:normal; font-size:9.5px; letter-spacing:0.06em; color:var(--blue-light); line-height:1.5;">— adrienne maree brown, Emergent Strategy</cite>
    		  </blockquote>
       </div>
